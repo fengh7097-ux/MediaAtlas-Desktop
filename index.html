@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MediaAtlas — Windows media library organization</title>
+<meta name="description" content="MediaAtlas (片序) is a Windows desktop application for organizing media libraries on connected cloud storage and local file systems.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<meta property="og:title" content="MediaAtlas — Windows media library organization">
+<meta property="og:description" content="A Windows desktop application for media library organization and intelligent metadata-assisted file management.">
+<meta property="og:type" content="website">
+<style>
+  :root {
+    --brand:        #6D28D9;
+    --brand-strong: #5B21B6;
+    --brand-soft:   #EDE9FE;
+    --brand-line:   #DDD6FE;
+    --ink:          #111827;
+    --ink-soft:     #4B5563;
+    --ink-mute:     #6B7280;
+    --bg:           #FFFFFF;
+    --bg-alt:       #F8F7FC;
+    --line:         #E5E7EB;
+    --radius:       14px;
+    --maxw:         1100px;
+    --shadow:       0 1px 2px rgba(17,24,39,.04), 0 8px 24px rgba(17,24,39,.05);
+    --mono: ui-monospace, SFMono-Regular, "Cascadia Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a { color: var(--brand); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  img { max-width: 100%; display: block; }
+
+  .wrap {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Header */
+  header.site {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: saturate(180%) blur(10px);
+    -webkit-backdrop-filter: saturate(180%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 64px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    font-size: 17px;
+  }
+  .brand:hover { text-decoration: none; }
+  .brand img { width: 28px; height: 28px; border-radius: 7px; }
+  .brand .cn { color: var(--ink-mute); font-weight: 500; font-size: 14px; }
+  .nav .spacer { flex: 1; }
+  .nav-links { display: flex; align-items: center; gap: 22px; }
+  .nav-links a {
+    color: var(--ink-soft);
+    font-size: 14.5px;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .nav-links a:hover { color: var(--ink); text-decoration: none; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 18px;
+    border-radius: 10px;
+    font-size: 14.5px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background .15s ease, border-color .15s ease, transform .05s ease;
+    white-space: nowrap;
+  }
+  .btn:hover { text-decoration: none; transform: translateY(-1px); }
+  .btn-primary {
+    background: var(--brand);
+    color: #fff;
+    border: 1px solid var(--brand);
+    box-shadow: 0 1px 2px rgba(109,40,217,.25);
+  }
+  .btn-primary:hover { background: var(--brand-strong); border-color: var(--brand-strong); }
+  .btn-ghost {
+    background: #fff;
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+  .btn-ghost:hover { border-color: var(--brand-line); background: var(--brand-soft); }
+
+  /* Hero */
+  .hero {
+    padding: 88px 0 56px;
+    background:
+      radial-gradient(1100px 420px at 82% -10%, rgba(109,40,217,.10), transparent 60%),
+      radial-gradient(800px 380px at 8% 10%, rgba(109,40,217,.06), transparent 55%),
+      var(--bg);
+    border-bottom: 1px solid var(--line);
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--brand-soft);
+    color: var(--brand-strong);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .01em;
+    border: 1px solid var(--brand-line);
+    margin-bottom: 22px;
+  }
+  .eyebrow .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--brand);
+    box-shadow: 0 0 0 3px rgba(109,40,217,.18);
+  }
+  h1 {
+    margin: 0 0 18px;
+    font-size: clamp(38px, 6vw, 62px);
+    line-height: 1.08;
+    letter-spacing: -0.028em;
+    font-weight: 700;
+    color: var(--ink);
+    max-width: 15ch;
+  }
+  .hero .lede {
+    margin: 0 0 32px;
+    font-size: clamp(17px, 2vw, 20px);
+    line-height: 1.65;
+    color: var(--ink-soft);
+    max-width: 62ch;
+    font-weight: 450;
+  }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; }
+  .hero-meta {
+    margin-top: 42px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px 44px;
+    color: var(--ink-mute);
+    font-size: 13.5px;
+    font-weight: 500;
+  }
+  .hero-meta div { display: flex; flex-direction: column; gap: 4px; }
+  .hero-meta .label { color: var(--ink-mute); text-transform: uppercase; letter-spacing: .08em; font-size: 11px; font-weight: 650; }
+  .hero-meta .value { color: var(--ink); font-size: 15px; font-weight: 600; }
+
+  /* Sections */
+  section { padding: 84px 0; }
+  section.alt { background: var(--bg-alt); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .sec-head { max-width: 62ch; margin-bottom: 44px; }
+  .sec-head .kicker {
+    display: inline-block;
+    color: var(--brand-strong);
+    font-size: 12.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    margin-bottom: 12px;
+  }
+  h2 {
+    margin: 0 0 14px;
+    font-size: clamp(28px, 3.6vw, 38px);
+    line-height: 1.18;
+    letter-spacing: -0.022em;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .sec-head p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 17px;
+    line-height: 1.7;
+  }
+
+  /* Feature grid */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 18px;
+  }
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 28px 26px;
+    box-shadow: var(--shadow);
+  }
+  .card .icon {
+    width: 42px; height: 42px;
+    border-radius: 11px;
+    background: var(--brand-soft);
+    color: var(--brand-strong);
+    display: grid;
+    place-items: center;
+    margin-bottom: 18px;
+  }
+  .card h3 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    font-weight: 650;
+    letter-spacing: -0.012em;
+    color: var(--ink);
+  }
+  .card ul {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--ink-soft);
+    font-size: 15px;
+    line-height: 1.75;
+  }
+  .card li + li { margin-top: 4px; }
+
+  /* Status */
+  .status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+  }
+  .status {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 26px;
+  }
+  .status .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 650;
+    letter-spacing: .02em;
+    margin-bottom: 14px;
+    border: 1px solid transparent;
+  }
+  .tag.dev   { background: var(--brand-soft); color: var(--brand-strong); border-color: var(--brand-line); }
+  .tag.plan  { background: #FEF3C7; color: #92400E; border-color: #FDE68A; }
+  .tag.next  { background: #E0E7FF; color: #3730A3; border-color: #C7D2FE; }
+  .status h3 { margin: 0 0 8px; font-size: 16.5px; font-weight: 650; color: var(--ink); letter-spacing: -0.01em; }
+  .status p  { margin: 0; color: var(--ink-soft); font-size: 14.5px; line-height: 1.7; }
+
+  /* Disclaimer */
+  .disclaimer {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--brand);
+    border-radius: 12px;
+    padding: 26px 28px;
+  }
+  .disclaimer p {
+    margin: 0 0 12px;
+    color: var(--ink-soft);
+    font-size: 15px;
+    line-height: 1.75;
+  }
+  .disclaimer p:last-child { margin-bottom: 0; }
+  .disclaimer strong { color: var(--ink); font-weight: 650; }
+
+  /* Contact */
+  .contact-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+    margin-top: 8px;
+  }
+  .contact {
+    display: block;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 26px;
+    color: inherit;
+    text-decoration: none;
+    transition: border-color .15s ease, transform .12s ease, box-shadow .15s ease;
+  }
+  .contact:hover {
+    border-color: var(--brand-line);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+    text-decoration: none;
+  }
+  .contact .label { font-size: 12px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; color: var(--brand-strong); margin-bottom: 8px; }
+  .contact h3 { margin: 0 0 8px; font-size: 17px; font-weight: 650; color: var(--ink); letter-spacing: -0.012em; }
+  .contact p  { margin: 0; color: var(--ink-soft); font-size: 14.5px; line-height: 1.65; }
+
+  /* Footer */
+  footer.site {
+    border-top: 1px solid var(--line);
+    padding: 40px 0 56px;
+    background: var(--bg);
+    color: var(--ink-mute);
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+  .foot-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px 32px;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  footer a { color: var(--ink-soft); }
+  footer a:hover { color: var(--brand); }
+  .foot-legal {
+    margin-top: 22px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    color: var(--ink-mute);
+    font-size: 12.5px;
+    max-width: 92ch;
+    line-height: 1.75;
+  }
+
+  @media (max-width: 720px) {
+    .nav-links { display: none; }
+    .hero { padding: 56px 0 40px; }
+    section { padding: 56px 0; }
+    h1 { max-width: none; }
+    .hero-meta { gap: 20px 28px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap nav">
+    <a class="brand" href="./">
+      <img src="assets/favicon.svg" alt="MediaAtlas logo">
+      <span>MediaAtlas <span class="cn">片序</span></span>
+    </a>
+    <div class="spacer"></div>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#status">Status</a>
+      <a href="#disclaimer">Independence</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a class="btn btn-primary" href="https://github.com/fengh7097-ux/MediaAtlas-Desktop" target="_blank" rel="noopener">View on GitHub</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot"></span> Version 2.4 — In Development</div>
+      <h1>Bring order to your media library.</h1>
+      <p class="lede">
+        MediaAtlas (<span lang="zh-Hans">片序</span>) is a Windows desktop application designed to organize and manage media libraries stored on connected cloud storage and local file systems — with metadata-assisted suggestions and human review before anything is changed.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="https://github.com/fengh7097-ux/MediaAtlas-Desktop" target="_blank" rel="noopener">View on GitHub</a>
+        <a class="btn btn-ghost" href="https://github.com/fengh7097-ux/MediaAtlas-Desktop/issues" target="_blank" rel="noopener">Send feedback</a>
+      </div>
+      <div class="hero-meta">
+        <div>
+          <span class="label">Platform</span>
+          <span class="value">Windows 10 / 11</span>
+        </div>
+        <div>
+          <span class="label">Application type</span>
+          <span class="value">Desktop software</span>
+        </div>
+        <div>
+          <span class="label">Current release</span>
+          <span class="value">2.4 (in development)</span>
+        </div>
+        <div>
+          <span class="label">Metadata sources</span>
+          <span class="value">TMDB planned · AniDB / TVDB planned</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="kicker">Key features</div>
+        <h2>Everything you need to organize a large library.</h2>
+        <p>
+          MediaAtlas focuses on the workflow that actually gets messy in real libraries: scanning a deep folder tree, associating subtitles, matching metadata, and renaming files — with a preview and a human sign-off before any change lands on disk.
+        </p>
+      </div>
+
+      <div class="features">
+        <article class="card">
+          <div class="icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/>
+              <path d="M12 11v5"/><path d="M9.5 13.5 12 11l2.5 2.5"/>
+            </svg>
+          </div>
+          <h3>Cloud Storage Integration</h3>
+          <ul>
+            <li>Connect to supported cloud storage services.</li>
+            <li>Browse remote folders and files.</li>
+            <li>Work with user-selected directories.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2Z"/>
+              <path d="M9 13h6"/><path d="M9 17h4"/>
+            </svg>
+          </div>
+          <h3>Batch File Renaming</h3>
+          <ul>
+            <li>CSV-based file renaming.</li>
+            <li>Preview before execution.</li>
+            <li>Operation history and undo.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/><path d="M8 11h6"/><path d="M11 8v6"/>
+            </svg>
+          </div>
+          <h3>Intelligent Media Organization</h3>
+          <ul>
+            <li>Recursive directory scanning.</li>
+            <li>Video and subtitle association.</li>
+            <li>Movie and TV metadata lookup.</li>
+            <li>Suggested folder and filename organization.</li>
+            <li>Human review before file operations.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M8 14h3"/><path d="M8 17h6"/>
+            </svg>
+          </div>
+          <h3>Metadata Integration</h3>
+          <ul>
+            <li>TMDB integration planned for movie and TV metadata.</li>
+            <li>AniDB and TVDB integration planned.</li>
+            <li>Episode numbering and metadata matching.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3 14.5 8.5 20 9.2l-4 4 1 5.8-5-2.9-5 2.9 1-5.8-4-4 5.5-.7Z"/>
+            </svg>
+          </div>
+          <h3>AI-Assisted Review</h3>
+          <ul>
+            <li>AI-assisted verification of metadata matching.</li>
+            <li>Configurable AI API providers.</li>
+            <li>Human approval before applying changes.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="status" class="alt">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="kicker">Development status</div>
+        <h2>MediaAtlas 2.4 is in development.</h2>
+        <p>
+          The feature list above describes the current design goals for the 2.4 line. Not every feature has been completed or validated against real-world media libraries at this stage, and behavior may change before release.
+        </p>
+      </div>
+
+      <div class="status-grid">
+        <div class="status">
+          <div class="tag dev">In development</div>
+          <h3>Version 2.4</h3>
+          <p>
+            Active development of the Windows desktop application: library scanning, subtitle association, CSV-based batch renaming, preview and undo, and human-reviewed organization suggestions.
+          </p>
+        </div>
+        <div class="status">
+          <div class="tag plan">Planned</div>
+          <h3>Metadata integrations</h3>
+          <p>
+            TMDB integration for movie and TV metadata is planned, along with AniDB and TVDB. Episode numbering and metadata matching are part of the design goals for the 2.4 line.
+          </p>
+        </div>
+        <div class="status">
+          <div class="tag next">Design goal</div>
+          <h3>AI-assisted review</h3>
+          <p>
+            AI-assisted verification of metadata matches with configurable providers, gated behind explicit human approval before any change is applied to your files.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="disclaimer">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="kicker">Independence &amp; attribution</div>
+        <h2>Clear about what MediaAtlas is — and isn’t.</h2>
+      </div>
+      <div class="disclaimer">
+        <p>
+          <strong>MediaAtlas is an independent project and is not affiliated with or endorsed by TMDB.</strong>
+        </p>
+        <p>
+          <strong>This product uses the TMDB API but is not endorsed or certified by TMDB.</strong>
+        </p>
+        <p>
+          MediaAtlas does not redistribute media content. It only reorganizes and renames files that the user already owns and has explicitly selected. All file operations require human review before they are applied.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="alt">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="kicker">Contact &amp; feedback</div>
+        <h2>Questions, bug reports, and ideas are welcome.</h2>
+        <p>Everything routes through the project’s public GitHub repository so there’s a single source of truth.</p>
+      </div>
+      <div class="contact-row">
+        <a class="contact" href="https://github.com/fengh7097-ux/MediaAtlas-Desktop" target="_blank" rel="noopener">
+          <div class="label">Repository</div>
+          <h3>Source &amp; project home</h3>
+          <p>Browse the repository, read the README, and follow the project.</p>
+        </a>
+        <a class="contact" href="https://github.com/fengh7097-ux/MediaAtlas-Desktop/issues" target="_blank" rel="noopener">
+          <div class="label">Issues</div>
+          <h3>Report a bug or request a feature</h3>
+          <p>Open an issue with details about your setup, the library you’re organizing, and what you expected.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <strong>MediaAtlas (片序)</strong> — Windows desktop application for media library organization.<br>
+        Version 2.4 — In Development · Platform: Windows 10 / 11
+      </div>
+      <div>
+        <a href="https://github.com/fengh7097-ux/MediaAtlas-Desktop" target="_blank" rel="noopener">GitHub</a>
+        &nbsp;·&nbsp;
+        <a href="https://github.com/fengh7097-ux/MediaAtlas-Desktop/issues" target="_blank" rel="noopener">Issues</a>
+      </div>
+    </div>
+    <div class="foot-legal">
+      MediaAtlas is an independent project and is not affiliated with or endorsed by TMDB.
+      This product uses the TMDB API but is not endorsed or certified by TMDB.
+      MediaAtlas does not redistribute media content and only reorganizes files the user has explicitly selected.
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
